@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+import type { HomeData } from "../../lib/home";
 
-export default function TopBar() {
+type Props = { user: HomeData["user"]; upToDate: boolean; unread: number };
+
+export default function TopBar({ user, upToDate, unread }: Props) {
   const [stuck, setStuck] = useState(false);
 
   useEffect(() => {
@@ -13,14 +16,14 @@ export default function TopBar() {
   return (
     <div className={`top${stuck ? " stuck" : ""}`}>
       <div className="top-in">
-        <div className="av">MR</div>
+        <div className="av">{user.initials}</div>
         <div className="greet">
-          <div className="h">Hola, Marcela</div>
-          <div className="s">Tu crédito está al día</div>
+          <div className="h">Hola, {user.firstName}</div>
+          <div className="s">{upToDate ? "Tu crédito está al día" : "Tienes pagos pendientes"}</div>
         </div>
-        <button className="iconbtn" aria-label="Notificaciones">
+        <button className="iconbtn" aria-label={unread ? `Notificaciones (${unread} sin leer)` : "Notificaciones"}>
           <svg><use href="#i-bell" /></svg>
-          <i className="dot" />
+          {unread > 0 && <i className="dot" />}
         </button>
       </div>
     </div>

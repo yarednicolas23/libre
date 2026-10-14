@@ -1,11 +1,6 @@
-const MOVEMENTS = [
-  { icon: "i-check", ok: true, h: "Cuota 21 de 48", s: "30 jul 2026 · Descuento de nómina", v: "−$389.400" },
-  { icon: "i-check", ok: true, h: "Abono extraordinario", s: "12 jul 2026 · PSE", v: "−$1.200.000", up: true },
-  { icon: "i-check", ok: true, h: "Cuota 20 de 48", s: "30 jun 2026 · Descuento de nómina", v: "−$389.400" },
-  { icon: "i-doc", ok: false, h: "Certificado de deuda", s: "18 jun 2026 · Generado", v: "PDF", pdf: true },
-];
+import { cop, shortDate, type Movement } from "../../lib/home";
 
-export default function MovementsSection() {
+export default function MovementsSection({ movements }: { movements: Movement[] }) {
   return (
     <>
       <div className="sh r" style={{ animationDelay: ".14s" }}>
@@ -13,20 +8,23 @@ export default function MovementsSection() {
         <a href="#">Ver todos</a>
       </div>
       <div className="list r" style={{ animationDelay: ".16s" }}>
-        {MOVEMENTS.map((m) => (
-          <div className="mv" key={m.h}>
-            <div className={`ic${m.ok ? " ok" : ""}`}><svg><use href={`#${m.icon}`} /></svg></div>
-            <div className="t">
-              <div className="h">{m.h}</div>
-              <div className="s">{m.s}</div>
+        {movements.map((m) => {
+          const isDoc = m.kind === "document";
+          return (
+            <div className="mv" key={m.id}>
+              <div className={`ic${isDoc ? "" : " ok"}`}><svg><use href={isDoc ? "#i-doc" : "#i-check"} /></svg></div>
+              <div className="t">
+                <div className="h">{m.title}</div>
+                <div className="s">{shortDate(m.date)} · {m.detail}</div>
+              </div>
+              {isDoc ? (
+                <div className="v" style={{ color: "var(--muted)", fontWeight: 500, fontSize: 13.5 }}>PDF</div>
+              ) : (
+                <div className={`v tnum${m.kind === "prepayment" ? " up" : ""}`}>−{cop(m.amount ?? 0)}</div>
+              )}
             </div>
-            {m.pdf ? (
-              <div className="v" style={{ color: "var(--muted)", fontWeight: 500, fontSize: 13.5 }}>{m.v}</div>
-            ) : (
-              <div className={`v tnum${m.up ? " up" : ""}`}>{m.v}</div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
